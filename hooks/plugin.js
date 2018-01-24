@@ -2,7 +2,7 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-01-24 18:24:46
+* @Last Modified time: 2018-01-24 18:58:57
 */
 
 console.log("Running tiapp-composer-plugin...");
@@ -41,7 +41,7 @@ async function compose(env, tplfile, outfile) {
 }
 
 exports.init = function (logger, config, cli, appc) {
-  cli.on("cli:go", async function (build, finished) {
+  cli.on("build.config", async function (build, finished) {
     let { tiappenv } = cli.globalContext.argv;
 
     if (tiappenv == null) {
