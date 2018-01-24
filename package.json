@@ -1,0 +1,33 @@
+{
+  "name": "tiapp-composer-plugin",
+  "version": "1.0.0",
+  "description": "Define dynamic tiapp.xml files with the power of template strings",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caffeinalab/tiapp-composer-plugin.git"
+  },
+  "keywords": [
+    "titanium",
+    "tiapp",
+    "xml",
+    "template",
+    "literals",
+    "strings",
+    "javascript",
+    "plugin",
+    "hook"
+  ],
+  "author": {
+    "name": "Andrea Jonus",
+    "email": "j.jonus.j@gmail.com",
+    "url": "https://github.com/Jei"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/caffeinalab/tiapp-composer-plugin/issues"
+  },
+  "homepage": "https://github.com/caffeinalab/tiapp-composer-plugin#readme"
+}
