@@ -2,7 +2,7 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-01-24 18:58:57
+* @Last Modified time: 2018-01-25 10:47:57
 */
 
 console.log("Running tiapp-composer-plugin...");
@@ -40,43 +40,46 @@ async function compose(env, tplfile, outfile) {
   });
 }
 
-exports.init = function (logger, config, cli, appc) {
-  cli.on("build.config", async function (build, finished) {
-    let { tiappenv } = cli.globalContext.argv;
+async function checkAndCompose(cli, logger, finished) {
+  let { tiappenv } = cli.globalContext.argv;
 
-    if (tiappenv == null) {
-      logger.warn('--tiappenv flag not set, defaulting to "development"');
-      tiappenv = "development";
-    }
+  if (tiappenv == null) {
+    logger.warn('--tiappenv flag not set, defaulting to "development"');
+    tiappenv = "development";
+  }
 
-    let tiappCfg = null;
+  let tiappCfg = null;
 
-    try {
-      tiappCfg = require(projectDir + '/tiapp-cfg');
-    } catch(err) {
-      logger.warn("Couldn't find a tiapp-cfg.json file:", err);
-      logger.warn('Skipping tiapp.xml composing.');
-      finished();
-      return;
-    }
-
-    if (tiappCfg[tiappenv] == null) {
-      logger.warn(`Couldn't find the environment "${tiappenv}" in the tiapp-cfg.json file.`);
-      logger.warn('Skipping tiapp.xml composing.');
-      finished();
-      return;
-    }
-
-    try {
-      await compose(tiappCfg[tiappenv], TIAPP_TEMPLATE, OUTFILE);
-
-      logger.info('Successfully wrote tiapp.xml');
-    } catch(err) {
-      logger.warn("Couldn't write the new tiapp.xml file:", err);
-      logger.warn('Skipping tiapp.xml composing.');
-    }
-
+  try {
+    tiappCfg = require(projectDir + '/tiapp-cfg');
+  } catch(err) {
+    logger.warn("Couldn't find a tiapp-cfg.json file:", err);
+    logger.warn('Skipping tiapp.xml composing.');
     finished();
-  });
+    return;
+  }
+
+  if (tiappCfg[tiappenv] == null) {
+    logger.warn(`Couldn't find the environment "${tiappenv}" in the tiapp-cfg.json file.`);
+    logger.warn('Skipping tiapp.xml composing.');
+    finished();
+    return;
+  }
+
+  try {
+    await compose(tiappCfg[tiappenv], TIAPP_TEMPLATE, OUTFILE);
+
+    logger.info('Successfully wrote tiapp.xml');
+  } catch(err) {
+    logger.warn("Couldn't write the new tiapp.xml file:", err);
+    logger.warn('Skipping tiapp.xml composing.');
+  }
+
+  finished();
+}
+
+exports.init = function (logger, config, cli, appc) {
+  cli.on("build.config", (build, finished) => checkAndCompose(cli, logger, finished));
+  cli.on("clean.config", (build, finished) => checkAndCompose(cli, logger, finished));
 };
 
