@@ -2,7 +2,7 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-01-25 10:47:57
+* @Last Modified time: 2018-01-25 12:30:25
 */
 
 console.log("Running tiapp-composer-plugin...");
@@ -15,7 +15,7 @@ const TIAPP_TEMPLATE = projectDir + '/tiapp.tpl';
 const OUTFILE = projectDir + '/tiapp.xml';
 let tiappEnv = null;
 
-async function compose(env, tplfile, outfile) {
+function compose(env, tplfile, outfile) {
   const fs = require('fs');
   const { app } = env;
 
@@ -40,7 +40,7 @@ async function compose(env, tplfile, outfile) {
   });
 }
 
-async function checkAndCompose(cli, logger, finished) {
+function checkAndCompose(cli, logger, finished) {
   let { tiappenv } = cli.globalContext.argv;
 
   if (tiappenv == null) {
@@ -66,16 +66,17 @@ async function checkAndCompose(cli, logger, finished) {
     return;
   }
 
-  try {
-    await compose(tiappCfg[tiappenv], TIAPP_TEMPLATE, OUTFILE);
-
+  compose(tiappCfg[tiappenv], TIAPP_TEMPLATE, OUTFILE)
+  .then(() => {
     logger.info('Successfully wrote tiapp.xml');
-  } catch(err) {
+  })
+  .catch((err) => {
     logger.warn("Couldn't write the new tiapp.xml file:", err);
     logger.warn('Skipping tiapp.xml composing.');
-  }
-
-  finished();
+  })
+  .then(() => {
+    finished();
+  });
 }
 
 exports.init = function (logger, config, cli, appc) {
