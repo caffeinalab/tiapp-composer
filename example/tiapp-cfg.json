@@ -1,0 +1,50 @@
+{
+    "development": {
+        "app": {
+            "id": "com.caffeinalab.tiappcomposer.example",
+            "version": "1.1.0",
+            "sdkVersion": "6.3.0.GA",
+            "ios": {
+              "supportedOrientations": {
+                "iphone": "<string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationLandscape</string>"
+              }
+            }
+        }
+    },
+    "oldLegacyStuff": {
+        "app": {
+            "id": "com.caffeinalab.tiappcomposer.example",
+            "version": "0.1.0",
+            "sdkVersion": "6.0.0.GA",
+            "ios": {
+              "supportedOrientations": {
+                "iphone": "<string>UIInterfaceOrientationPortrait</string>"
+              }
+            }
+        }
+    },
+    "enterprise": {
+        "app": {
+            "id": "com.caffeinalab.tiappcomposer.example.enterprise",
+            "version": "1.0.0",
+            "sdkVersion": "6.2.2.GA",
+            "ios": {
+              "supportedOrientations": {
+                "iphone": "<string>UIInterfaceOrientationPortrait</string>"
+              }
+            }
+        }
+    },
+    "production": {
+        "app": {
+            "id": "com.caffeinalab.tiappcomposer.example.enterprise",
+            "version": "1.0.0",
+            "sdkVersion": "6.2.2.GA",
+            "ios": {
+              "supportedOrientations": {
+                "iphone": "<string>UIInterfaceOrientationPortrait</string>"
+              }
+            }
+        }
+    }
+}
