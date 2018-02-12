@@ -1,4 +1,4 @@
-# tiapp-composer-plugin
+# tiapp-composer
 
 A Titanium plugin that enables the definition of a template file for the `tiapp.xml` of your project.
 
@@ -102,26 +102,26 @@ You can use the `--tiappenv` flag in your `titanium build` or `titanium clean` c
 ```
 ti build --platform android --target device --device-id all --tiappenv development
 
-Running tiapp-composer-plugin...
-[INFO]  tiapp-composer-plugin: Successfully wrote tiapp.xml
+Running tiapp-composer...
+[INFO]  tiapp-composer: Successfully wrote tiapp.xml
 ```
 
 If you use a name you haven't defined in your config, the plugin will **not** write the `tiapp.xml` file:
 ```
 ti build --platform android --target device --device-id all --tiappenv ayylmao
 
-Running tiapp-composer-plugin...
-[WARN]  tiapp-composer-plugin: Couldn't find the environment "ayylmao" in the tiapp-cfg.json file.
-[WARN]  tiapp-composer-plugin Skipping tiapp.xml composing.
+Running tiapp-composer...
+[WARN]  tiapp-composer: Couldn't find the environment "ayylmao" in the tiapp-cfg.json file.
+[WARN]  tiapp-composer Skipping tiapp.xml composing.
 ```
 
 If you don't add the `--tiappenv` flag to your command, the plugin will default to the name `development`:
 ```
 ti build --platform android --target device --device-id all
 
-Running tiapp-composer-plugin...
-[WARN]  tiapp-composer-plugin: --tiappenv flag not set, defaulting to "development"
-[INFO]  tiapp-composer-plugin: Successfully wrote tiapp.xml
+Running tiapp-composer...
+[WARN]  tiapp-composer: --tiappenv flag not set, defaulting to "development"
+[INFO]  tiapp-composer: Successfully wrote tiapp.xml
 ```
 
 ## Tips

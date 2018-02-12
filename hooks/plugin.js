@@ -2,14 +2,16 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-02-01 14:48:25
+* @Last Modified time: 2018-02-12 12:35:18
 */
 
-const TAG = 'tiapp-composer-plugin';
+const TAG = 'tiapp-composer';
 console.log(`Running ${TAG}...`);
 
 exports.cliVersion = '>=3.X';
 exports.version = '1.0.0';
+
+const fs = require('fs');
 
 const projectDir = process.cwd();
 const TIAPP_TEMPLATE = projectDir + '/tiapp.tpl';
@@ -19,9 +21,18 @@ const GIT = projectDir + '/.git';
 const GITIGNORE = projectDir + '/.gitignore';
 let tiappEnv = null;
 
+function checkTiappTpl(lg) {
+  const logger = lg != null ? lg : console;
+
+  return new Promise((resolve, reject) => {
+    const exists = fs.existsSync(TIAPP_TEMPLATE);
+    if (exists) return resolve();
+    reject();
+  });
+}
+
 function checkGit(lg) {
   const logger = lg != null ? lg : console;
-  const fs = require('fs');
 
   return new Promise((resolve, reject) => {
     fs.stat(GIT, (err, stats) => {
@@ -45,7 +56,6 @@ function checkGit(lg) {
 
 function checkGitIgnore(lg) {
   const logger = lg != null ? lg : console;
-  const fs = require('fs');
   const readline = require('readline');
 
   let found = false;
@@ -71,7 +81,6 @@ function checkGitIgnore(lg) {
 }
 
 function compose(env, tplfile, outfile) {
-  const fs = require('fs');
   const { app } = env;
 
   return new Promise((resolve, reject) => {
@@ -97,6 +106,8 @@ function compose(env, tplfile, outfile) {
 
 function checkAndCompose(cli, logger, finished) {
   let { tiappenv } = cli.globalContext.argv;
+
+
 
   if (tiappenv == null) {
     logger.warn(`${TAG}: --tiappenv flag not set, defaulting to "development"`);
@@ -135,12 +146,18 @@ function checkAndCompose(cli, logger, finished) {
 }
 
 exports.init = function (logger, config, cli, appc) {
-  checkGit(logger)
-  .then(checkGitIgnore)
-  .catch(() => {
-    logger.log(`${TAG}: Git not detected.`);
-  });
+  checkTiappTpl(logger)
+  .then(() => {
+    checkGit(logger)
+    .then(checkGitIgnore)
+    .catch(() => {
+      logger.log(`${TAG}: Git not detected.`);
+    });
 
-  cli.on("build.config", (build, finished) => checkAndCompose(cli, logger, finished));
-  cli.on("clean.config", (build, finished) => checkAndCompose(cli, logger, finished));
+    cli.on("build.config", (build, finished) => checkAndCompose(cli, logger, finished));
+    cli.on("clean.config", (build, finished) => checkAndCompose(cli, logger, finished));
+  })
+  .catch(() => {
+      logger.warn(`${TAG}: Template file not found. This should be fine only if you don't want to use tiappp-composer in this project.`);
+  });;
 };
