@@ -25,6 +25,13 @@
     "email": "j.jonus.j@gmail.com",
     "url": "https://github.com/Jei"
   },
+  "contributors": [
+    {
+      "name": "Flavio Maria De Stefano",
+      "email": "destefano.flavio@gmail.com",
+      "url": "https://github.com/kopiro"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/caffeinalab/tiapp-composer/issues"
