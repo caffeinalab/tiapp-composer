@@ -1,9 +1,9 @@
 {
   "name": "tiapp-composer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Define dynamic tiapp.xml files with the power of template strings",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "ti config paths.hooks -a $(pwd)/hooks"
   },
   "repository": {
     "type": "git",
@@ -35,9 +35,6 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/caffeinalab/tiapp-composer/issues"
-  },
-  "scripts": {
-    "postinstall": "ti config paths.hooks -a $(pwd)/hooks"
   },
   "homepage": "https://github.com/caffeinalab/tiapp-composer#readme"
 }

@@ -2,14 +2,14 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-02-12 12:35:18
+* @Last Modified time: 2018-02-12 12:53:26
 */
 
 const TAG = 'tiapp-composer';
 console.log(`Running ${TAG}...`);
 
 exports.cliVersion = '>=3.X';
-exports.version = '1.0.0';
+exports.version = '1.0.1';
 
 const fs = require('fs');
 
