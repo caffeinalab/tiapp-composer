@@ -6,14 +6,8 @@ A Titanium plugin that enables the definition of a template file for the `tiapp.
 
 ## Installation
 
-Clone this repository in a path of your choice:
 ```
-git clone git@github.com:caffeinalab/tiapp-composer.git /path/to/this/plugin
-```
-
-Set the `hooks` directory as a global plugin:
-```
-ti config -a paths.hooks /path/to/this/plugin/hooks
+npm i -g tiapp-composer
 ```
 
 Done!
