@@ -29,5 +29,8 @@
   "bugs": {
     "url": "https://github.com/caffeinalab/tiapp-composer-plugin/issues"
   },
+  "scripts": {
+    "postinstall": "ti config paths.hooks -a $(pwd)/hooks"
+  },
   "homepage": "https://github.com/caffeinalab/tiapp-composer-plugin#readme"
 }
