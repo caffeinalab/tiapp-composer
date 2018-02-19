@@ -2,7 +2,7 @@
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
 * @Last Modified by:   Jei
-* @Last Modified time: 2018-02-12 12:53:26
+* @Last Modified time: 2018-02-19 11:33:35
 */
 
 const TAG = 'tiapp-composer';
@@ -107,8 +107,6 @@ function compose(env, tplfile, outfile) {
 function checkAndCompose(cli, logger, finished) {
   let { tiappenv } = cli.globalContext.argv;
 
-
-
   if (tiappenv == null) {
     logger.warn(`${TAG}: --tiappenv flag not set, defaulting to "development"`);
     tiappenv = "development";
@@ -145,7 +143,7 @@ function checkAndCompose(cli, logger, finished) {
   });
 }
 
-exports.init = function (logger, config, cli, appc) {
+function runHook(cli, logger, finished) {
   checkTiappTpl(logger)
   .then(() => {
     checkGit(logger)
@@ -154,10 +152,14 @@ exports.init = function (logger, config, cli, appc) {
       logger.log(`${TAG}: Git not detected.`);
     });
 
-    cli.on("build.config", (build, finished) => checkAndCompose(cli, logger, finished));
-    cli.on("clean.config", (build, finished) => checkAndCompose(cli, logger, finished));
+    checkAndCompose(cli, logger, finished);
   })
   .catch(() => {
       logger.warn(`${TAG}: Template file not found. This should be fine only if you don't want to use tiappp-composer in this project.`);
-  });;
+  });
+}
+
+exports.init = function (logger, config, cli, appc) {
+  cli.on("build.config", (build, finished) => runHook(cli, logger, finished));
+  cli.on("clean.config", (build, finished) => runHook(cli, logger, finished));
 };
