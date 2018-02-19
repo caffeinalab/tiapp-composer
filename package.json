@@ -1,6 +1,6 @@
 {
   "name": "tiapp-composer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Define dynamic tiapp.xml files with the power of template strings",
   "scripts": {
     "postinstall": "ti config paths.hooks -a $(pwd)/hooks"
