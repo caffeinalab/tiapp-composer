@@ -1,8 +1,8 @@
 /*
 * @Author: andrea.jonus
 * @Date:   2018-01-24 10:57:19
-* @Last Modified by:   Jei
-* @Last Modified time: 2018-02-19 11:33:35
+* @Last Modified by:   Andrea Jonus
+* @Last Modified time: 2018-02-22 10:17:01
 */
 
 const TAG = 'tiapp-composer';
@@ -155,7 +155,8 @@ function runHook(cli, logger, finished) {
     checkAndCompose(cli, logger, finished);
   })
   .catch(() => {
-      logger.warn(`${TAG}: Template file not found. This should be fine only if you don't want to use tiappp-composer in this project.`);
+    logger.warn(`${TAG}: Template file not found. This should be fine only if you don't want to use tiappp-composer in this project.`);
+    finished();
   });
 }
 
