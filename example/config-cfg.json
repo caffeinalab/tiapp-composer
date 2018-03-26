@@ -1,0 +1,30 @@
+{
+    "development": {
+        "app": {
+            "foo": "2b14f6a69199243f570031bf94865bb6",
+            "baz": "f4eb27cea7255cea4d1ffabf593372e8",
+            "bar": "\"ayy\": \"no\""
+        }
+    },
+    "oldLegacyStuff": {
+        "app": {
+            "foo": 12345,
+            "baz": 54321,
+            "bar": "\"ayy\": \"uh?\""
+        }
+    },
+    "enterprise": {
+        "app": {
+            "foo": "a0fcdc002557783dc0e519affad4486d",
+            "baz": "83feb49d8819b12766e0ff0bbf5cfe34",
+            "bar": "\"ayy\": \"lmao\""
+        }
+    },
+    "production": {
+        "app": {
+            "foo": "a0fcdc002557783dc0e519affad4486d",
+            "baz": "83feb49d8819b12766e0ff0bbf5cfe34",
+            "bar": "\"ayy\": \"lmao\""
+        }
+    }
+}
