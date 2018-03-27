@@ -5,30 +5,26 @@
 * @Last Modified time: 2018-02-22 10:17:01
 */
 
-const TAG = 'tiapp-composer';
+const TAG = "tiapp-composer";
 console.log(`Running ${TAG}...`);
 
-exports.cliVersion = '>=3.X';
-exports.version = '1.0.1';
+exports.cliVersion = ">=3.X";
+exports.version = "1.0.1";
 
-const fs = require('fs');
+const fs = require("fs");
 
 const projectDir = process.cwd();
-const TIAPP_TEMPLATE = projectDir + '/tiapp.tpl';
-const TIAPP_FILE = 'tiapp.xml';
-const OUTFILE = projectDir + '/' + TIAPP_FILE;
-const GIT = projectDir + '/.git';
-const GITIGNORE = projectDir + '/.gitignore';
+const COMPOSABLE_FILES = ["tiapp.xml", "app/config.json"];
+const GIT = projectDir + "/.git";
+const GITIGNORE = projectDir + "/.gitignore";
+
 let tiappEnv = null;
 
-function checkTiappTpl(lg) {
-  const logger = lg != null ? lg : console;
+function checkTemplate(tplname) {
+  const exists = fs.existsSync(`${projectDir}/${tplname}`);
+  if (exists) return Promise.resolve();
 
-  return new Promise((resolve, reject) => {
-    const exists = fs.existsSync(TIAPP_TEMPLATE);
-    if (exists) return resolve();
-    reject();
-  });
+  return Promise.reject();
 }
 
 function checkGit(lg) {
@@ -38,7 +34,7 @@ function checkGit(lg) {
     fs.stat(GIT, (err, stats) => {
       if (err) {
         if (err.code != "ENOENT") {
-          logger.warn(`${TAG}: Couldn't access .git directory:`, err);
+          logger.trace(`${TAG}: Couldn't access .git directory:`, err);
         }
 
         reject();
@@ -54,28 +50,30 @@ function checkGit(lg) {
   });
 }
 
-function checkGitIgnore(lg) {
+function checkGitIgnore(filename, lg) {
   const logger = lg != null ? lg : console;
-  const readline = require('readline');
+  const readline = require("readline");
 
   let found = false;
 
-  const lineReader = require('readline').createInterface({
-    input: fs.createReadStream(GITIGNORE),
+  const lineReader = require("readline").createInterface({
+    input: fs.createReadStream(GITIGNORE)
   });
 
-  lineReader.on('line', (line) => {
+  lineReader.on("line", line => {
     const trimmed = line.trim();
-    if (trimmed == TIAPP_FILE || trimmed == ('/' + TIAPP_FILE)) {
+    if (trimmed == filename || trimmed == "/" + filename) {
       found = true;
 
       lineReader.close();
     }
   });
 
-  lineReader.on('close', () => {
+  lineReader.on("close", () => {
     if (!found) {
-      logger.warn(`${TAG}: This plugin will overwrite your tiapp. You should add "${TIAPP_FILE}" to your .gitignore`);
+      logger.warn(
+        `${TAG}: This plugin will overwrite your tiapp. You should add "${filename}" or "/${filename}" to your .gitignore`
+      );
     }
   });
 }
@@ -90,77 +88,90 @@ function compose(env, tplfile, outfile) {
         return;
       }
 
-      const composed = eval('`' + tpl + '`');
+      const composed = eval("`" + tpl + "`");
 
-      fs.writeFile(outfile, composed, (err) => {
+      fs.writeFile(outfile, composed, err => {
         if (err) {
           reject(err);
           return;
         }
 
         resolve();
-      })
+      });
     });
   });
 }
 
-function checkAndCompose(cli, logger, finished) {
-  let { tiappenv } = cli.globalContext.argv;
+function checkAndCompose(filename, tiappenv, logger) {
+  const name = filename.replace(/\.[^\/.]+$/, "");
+  let config = null;
 
   if (tiappenv == null) {
     logger.warn(`${TAG}: --tiappenv flag not set, defaulting to "development"`);
     tiappenv = "development";
   }
 
-  let tiappCfg = null;
-
   try {
-    tiappCfg = require(projectDir + '/tiapp-cfg');
-  } catch(err) {
-    logger.warn(`${TAG}: Couldn't find a tiapp-cfg.json file:`, err);
-    logger.warn(`${TAG}: Skipping tiapp.xml composing.`);
-    finished();
-    return;
+    config = require(`${projectDir}/${name}-cfg.json`);
+  } catch (err) {
+    logger.warn(`${TAG}: Couldn't find a ${name}-cfg.json file:`, err);
+    logger.warn(`${TAG}: Skipping ${filename} composing.`);
+    return Promise.resolve();
   }
 
-  if (tiappCfg[tiappenv] == null) {
-    logger.warn(`${TAG}: Couldn't find the environment "${tiappenv}" in the tiapp-cfg.json file.`);
-    logger.warn(`${TAG} Skipping tiapp.xml composing.`);
-    finished();
-    return;
+  if (config[tiappenv] == null) {
+    logger.warn(
+      `${TAG}: Couldn't find the environment "${tiappenv}" in the ${name}-cfg.json file.`
+    );
+    logger.warn(`${TAG} Skipping ${filename} composing.`);
+    return Promise.resolve();
   }
 
-  compose(tiappCfg[tiappenv], TIAPP_TEMPLATE, OUTFILE)
-  .then(() => {
-    logger.info(`${TAG}: Successfully wrote tiapp.xml`);
-  })
-  .catch((err) => {
-    logger.warn(`${TAG}: Couldn't write the new tiapp.xml file:`, err);
-    logger.warn(`${TAG}: Skipping tiapp.xml composing.`);
-  })
-  .then(() => {
-    finished();
-  });
+  compose(
+    config[tiappenv],
+    `${projectDir}/${name}.tpl`,
+    `${projectDir}/${filename}`
+  )
+    .then(() => {
+      logger.info(`${TAG}: Successfully wrote ${filename}`);
+    })
+    .catch(err => {
+      logger.warn(`${TAG}: Couldn't write the new ${filename} file:`, err);
+      logger.warn(`${TAG}: Skipping ${filename} composing.`);
+    });
 }
 
 function runHook(cli, logger, finished) {
-  checkTiappTpl(logger)
-  .then(() => {
-    checkGit(logger)
-    .then(checkGitIgnore)
-    .catch(() => {
-      logger.log(`${TAG}: Git not detected.`);
-    });
+  const { tiappenv } = cli.globalContext.argv;
 
-    checkAndCompose(cli, logger, finished);
-  })
-  .catch(() => {
-    logger.warn(`${TAG}: Template file not found. This should be fine only if you don't want to use tiappp-composer in this project.`);
+  Promise.all(
+    COMPOSABLE_FILES.map(filename => {
+      const name = filename.replace(/\.[^\/.]+$/, "");
+
+      return checkTemplate(name + ".tpl")
+        .then(() => {
+          checkGit(logger)
+            .then(() => checkGitIgnore(filename, logger))
+            .catch(() => {
+              logger.trace(`${TAG}: Git not detected.`);
+            });
+
+          return checkAndCompose(filename, tiappenv, logger);
+        })
+        .catch(() => {
+          logger.trace(
+            `${TAG}: ${name}.tpl file not found. This should be fine only if you don't want to use tiapp-composer in this project.`
+          );
+        });
+    })
+  ).then(() => {
+    finished();
+  }).catch(() => {
     finished();
   });
 }
 
-exports.init = function (logger, config, cli, appc) {
+exports.init = function(logger, config, cli, appc) {
   cli.on("build.config", (build, finished) => runHook(cli, logger, finished));
   cli.on("clean.config", (build, finished) => runHook(cli, logger, finished));
 };
