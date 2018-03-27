@@ -164,7 +164,9 @@ function runHook(cli, logger, finished) {
           );
         });
     })
-  ).finally(() => {
+  ).then(() => {
+    finished();
+  }).catch(() => {
     finished();
   });
 }
