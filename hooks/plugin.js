@@ -127,7 +127,7 @@ function checkAndCompose(filename, tiappenv, logger) {
     return Promise.resolve();
   }
 
-  compose(
+  return compose(
     config[tiappenv],
     `${projectDir}/${name}.tpl`,
     `${projectDir}/${filename}`
