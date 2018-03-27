@@ -1,8 +1,8 @@
 # tiapp-composer
 
-A Titanium plugin that enables the definition of a template file for the `tiapp.xml` of your project.
+A Titanium plugin that enables the definition of a template file for the `tiapp.xml` of your project. It now supports the `app/config.json` file too!
 
-**NOTE:** this script works only as a global plugin, since it has to modify the `tiapp.xml` _before_ the Titanium CLI parses it.
+**NOTE:** this script works only as a global plugin, since it has to modify `tiapp.xml` and `config.json` _before_ the Titanium CLI parses them.
 
 ## Installation
 
@@ -96,6 +96,10 @@ and the corresponding `tiapp-cfg.json` would be:
 ```
 
 As you can see, you can replace entire sections of the tiapp with a custom string. Hell, you could even put *the whole* `tiapp.xml` in the config as an attribute. I'm not judging you.
+
+### config.tpl and config-cfg.json
+You can write a template and configuration for your `config.json` file too, in the same manner as above.
+Check out an example [template](https://github.com/caffeinalab/tiapp-composer/blob/master/example/app/config.tpl) and [configuration](https://github.com/caffeinalab/tiapp-composer/blob/master/example/app/config-cfg.json)
 
 ### --tiappenv
 You can use the `--tiappenv` flag in your `titanium build` or `titanium clean` command, with one of the top-level attribute names you defined:

@@ -164,11 +164,13 @@ function runHook(cli, logger, finished) {
           );
         });
     })
-  ).then(() => {
-    finished();
-  }).catch(() => {
-    finished();
-  });
+  )
+    .then(() => {
+      finished();
+    })
+    .catch(() => {
+      finished();
+    });
 }
 
 exports.init = function(logger, config, cli, appc) {
