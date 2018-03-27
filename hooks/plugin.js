@@ -14,7 +14,7 @@ exports.version = "1.0.1";
 const fs = require("fs");
 
 const projectDir = process.cwd();
-const COMPOSABLE_FILES = ["tiapp.xml", "config.json"];
+const COMPOSABLE_FILES = ["tiapp.xml", "app/config.json"];
 const GIT = projectDir + "/.git";
 const GITIGNORE = projectDir + "/.gitignore";
 
@@ -102,9 +102,8 @@ function compose(env, tplfile, outfile) {
   });
 }
 
-function checkAndCompose(filename, cli, logger) {
+function checkAndCompose(filename, tiappenv, logger) {
   const name = filename.replace(/\.[^\/.]+$/, "");
-  let { tiappenv } = cli.globalContext.argv;
   let config = null;
 
   if (tiappenv == null) {
@@ -143,19 +142,21 @@ function checkAndCompose(filename, cli, logger) {
 }
 
 function runHook(cli, logger, finished) {
+  const { tiappenv } = cli.globalContext.argv;
+
   Promise.all(
     COMPOSABLE_FILES.map(filename => {
       const name = filename.replace(/\.[^\/.]+$/, "");
 
-      return checkTemplate(name + '.tpl')
+      return checkTemplate(name + ".tpl")
         .then(() => {
           checkGit(logger)
             .then(() => checkGitIgnore(filename, logger))
             .catch(() => {
-              logger.log(`${TAG}: Git not detected.`);
+              logger.trace(`${TAG}: Git not detected.`);
             });
 
-          return checkAndCompose(filename, cli, logger);
+          return checkAndCompose(filename, tiappenv, logger);
         })
         .catch(() => {
           logger.trace(
