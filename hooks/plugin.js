@@ -102,8 +102,9 @@ function compose(env, tplfile, outfile) {
   });
 }
 
-function checkAndCompose(filename, tiappenv, logger) {
+function checkAndCompose(filename, argv = {}, logger) {
   const name = filename.replace(/\.[^\/.]+$/, "");
+  const { tiappenv, tiappenvcopyto } = argv;
   let config = null;
 
   if (tiappenv == null) {
@@ -134,6 +135,7 @@ function checkAndCompose(filename, tiappenv, logger) {
   )
     .then(() => {
       logger.info(`${TAG}: Successfully wrote ${filename}`);
+      if (tiappenvcopyto) copyConfigToDir(name, tiappenvcopyto, logger);
     })
     .catch(err => {
       logger.warn(`${TAG}: Couldn't write the new ${filename} file:`, err);
@@ -141,8 +143,24 @@ function checkAndCompose(filename, tiappenv, logger) {
     });
 }
 
+function copyConfigToDir(name, tiappenvcopyto, logger) {
+  const copyPath = tiappenvcopyto.replace(/^\/|\/$/g, '');
+
+  fs.exists(copyPath, exists => {
+    if (!exists) return logger.warn(`${TAG}: Copying file to directory "${tiappenvcopyto}", failed. Directory doesn't exists`);
+    const namePathParts = name.split(/\//);
+    const clearName = namePathParts[namePathParts.length - 1];
+
+    const directoryCopyTo = `${projectDir}/${copyPath}/${clearName}-cfg.json`;
+    fs.copyFile(`${projectDir}/${name}-cfg.json`, directoryCopyTo, err => {
+      if (err) return logger.warn(`${TAG}: Copying file "${name}-cfg.json", failed: ${err}`);
+      logger.warn(`${TAG}: Copying file "${name}-cfg.json", was successful. Directory of file "${directoryCopyTo}"`);
+    });
+  });
+}
+
 function runHook(cli, logger, finished) {
-  const { tiappenv } = cli.globalContext.argv;
+  const { tiappenv, tiappenvcopyto } = cli.globalContext.argv;
 
   Promise.all(
     COMPOSABLE_FILES.map(filename => {
@@ -156,7 +174,7 @@ function runHook(cli, logger, finished) {
               logger.trace(`${TAG}: Git not detected.`);
             });
 
-          return checkAndCompose(filename, tiappenv, logger);
+          return checkAndCompose(filename, {tiappenv, tiappenvcopyto}, logger);
         })
         .catch(() => {
           logger.trace(
